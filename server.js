@@ -1,10 +1,8 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
-
-
-
 const app = express();
+require('dotenv').config();
 app.use(express.json()); // Parse JSON requests
 app.use(cors()); // Allow cross-origin requests
 
@@ -57,3 +55,13 @@ app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
 
+if (process.env.PUBLIC_URL) {
+  const protocol = process.env.PUBLIC_URL.startsWith('https') ? require('https') : require('http');
+  setInterval(() => {
+    protocol.get(process.env.PUBLIC_URL, (res) => {
+      console.log(`Self ping: ${res.statusCode}`);
+    }).on('error', (err) => {
+      console.error('Error en el self ping:', err.message);
+    });
+  }, 300000); // 300000 ms = 5 minutos
+}
